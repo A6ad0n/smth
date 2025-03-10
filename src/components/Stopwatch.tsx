@@ -49,8 +49,8 @@ export default function Stopwatch(props: StopwatchProps) {
 
   return (
     <div className={`bg-gray-800 p-4 rounded-lg flex justify-between items-center transition-opacity duration-400 
-      ${isRunning && !isPaused ? 'opacity-100' : isPaused ? 'opacity-70' : 'opacity-40'} 
-      transform hover:opacity-100`}
+      ${isRunning && !isPaused ? 'bg-gray-800' : isPaused ? 'bg-gray-800/70' : 'bg-gray-800/30'} 
+      transform hover:bg-gray-800`}
     >
       <span className="text-xl font-mono">
         {Math.floor(counter / 60)}:{String(counter % 60).padStart(2, "0")}

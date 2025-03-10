@@ -28,7 +28,7 @@ export default function StopwatchList() {
   
 
   const addStopwatch = () => {
-    const newId = Date.now();
+    const newId: number = Date.now();
     console.log("ADDING ID " + newId % 10_000);
     setStopwatches((prevStopwatches) => [
       ...prevStopwatches,
@@ -65,7 +65,7 @@ export default function StopwatchList() {
       </button>
       <div className="space-y-4">
         {stopwatches.map((stopwatch) => (
-        <div className={`${isAdded[stopwatch.id] ?? false ? "transition animate-slide-in" 
+        <div key={stopwatch.id} className={`${isAdded[stopwatch.id] ?? false ? "transition animate-slide-in" 
           : isRemoving[stopwatch.id] ?? false ? "transition animate-slide-out" : ""}`}
         >
           <Stopwatch id={stopwatch.id} removeStopwatch={removeStopwatch} />
