@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import Stopwatch from './Stopwatch';
-import AnimationComponent from './AnimationStopwatch';
 import '../main.css'
 
 export default function StopwatchList() {
@@ -66,13 +65,11 @@ export default function StopwatchList() {
       </button>
       <div className="space-y-4">
         {stopwatches.map((stopwatch) => (
-        <AnimationComponent 
-          key={stopwatch.id}
-          isAdded={isAdded[stopwatch.id] ?? false}
-          isRemoving={isRemoving[stopwatch.id] ?? false}
+        <div className={`${isAdded[stopwatch.id] ?? false ? "transition animate-slide-in" 
+          : isRemoving[stopwatch.id] ?? false ? "transition animate-slide-out" : ""}`}
         >
           <Stopwatch id={stopwatch.id} removeStopwatch={removeStopwatch} />
-        </AnimationComponent>
+        </div>
         ))}
       </div>
     </div>

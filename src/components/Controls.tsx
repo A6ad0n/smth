@@ -34,7 +34,7 @@ export default function Controls(props: ControlsProps) {
         </button>
       </>
     )}
-    <button className="text-xl text-red-400 hover:text-red-600" onClick={props.remove}>
+    <button className="z-[1000] opacity-100 text-xl text-red-400 hover:text-red-600" onClick={props.remove}>
       ✖
     </button>
   </div>
