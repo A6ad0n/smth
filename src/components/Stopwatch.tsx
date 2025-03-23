@@ -49,7 +49,7 @@ export default function Stopwatch(props: StopwatchProps) {
 
   return (
     <div className={`bg-gray-800 p-4 rounded-lg flex justify-between items-center transition-opacity duration-400 
-      ${isRunning && !isPaused ? 'bg-gray-800' : isPaused ? 'bg-gray-800/70' : 'bg-gray-800/30'} 
+      bg-gray-800${isRunning && !isPaused ? '' : isPaused ? '/70' : '/30'} 
       transform hover:bg-gray-800`}
     >
       <span className="text-xl font-mono">

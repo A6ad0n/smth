@@ -1,58 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Stopwatch from './Stopwatch';
 import '../main.css'
 
 export default function StopwatchList() {
   const [stopwatches, setStopwatches] = useState<{ id: number; }[]>([]);
-  const [isAdded, setIsAdded] = useState<{ [key: number] : boolean }>([]);
-  const [isRemoving, setIsRemoving] = useState<{ [key: number] : boolean }>([]);
-
-  /**
-   * FOR DEBUG
-   */
-  useEffect(() => {
-    console.log("------------Updated stopwatches-------------");
-    stopwatches.forEach((stopwatch) => {
-      console.log(`${String(stopwatch.id).slice(-4)}`);
-    });    
-    console.log("------------------");
-  }, [stopwatches]);
-
-  useEffect(() => {
-    console.log("-----------Updated ISREMOVING-----------");
-    Object.entries(isRemoving).forEach(([key, value]) => {
-      console.log(`${key.slice(-4)}: ${value}`);
-    });
-    console.log("------------------");
-  }, [isRemoving]);
-  
+  const isAddedRefs                   = useRef< Set<number> >(new Set<number>());
+  const [isRemoving, setIsRemoving]   = useState< Set<number> >(new Set<number>());
 
   const addStopwatch = () => {
     const newId: number = Date.now();
-    console.log("ADDING ID " + newId % 10_000);
     setStopwatches((prevStopwatches) => [
       ...prevStopwatches,
       { id: newId },
     ]);
-    setIsAdded((prev) => ({ ...prev, [newId]: true }));
-
-    setTimeout(() => {
-      setIsAdded((prev) => ({ ...prev, [newId]: false }));
-    }, 500);
+    isAddedRefs.current.add(newId);
   };
 
   const removeStopwatch = (id: number) => {
-    console.log("REMOVING ID " + id % 10_000);
-    if (isRemoving[id]) return;
-    
-    setIsRemoving((prev) => ({ ...prev, [id]: true }));
-
-    setTimeout(() => {
-      setStopwatches((prevStopwatches) =>
-        prevStopwatches.filter((stopwatch) => stopwatch.id !== id)
-      );
-      setIsRemoving((prev) => ({ ...prev, [id]: false }));
-    }, 500);
+    if (isRemoving.has(id)) return;
+    setIsRemoving((prev) => new Set(prev).add(id));
   };
 
   return (
@@ -64,13 +30,33 @@ export default function StopwatchList() {
         + Add Stopwatch
       </button>
       <div className="space-y-4">
-        {stopwatches.map((stopwatch) => (
-        <div key={stopwatch.id} className={`${isAdded[stopwatch.id] ?? false ? "transition animate-slide-in" 
-          : isRemoving[stopwatch.id] ?? false ? "transition animate-slide-out" : ""}`}
-        >
-          <Stopwatch id={stopwatch.id} removeStopwatch={removeStopwatch} />
-        </div>
-        ))}
+        {stopwatches.map((stopwatch) => {
+          const isAdded    = isAddedRefs.current.has(stopwatch.id);
+          const toRemove   = isRemoving.has(stopwatch.id);
+          return (
+            <div 
+              key={stopwatch.id}
+              className={`transition ${
+                isAdded ? "animate-slide-in" : toRemove ? "animate-slide-out" : ""
+              }`}
+              onAnimationEnd={() => {
+                if (toRemove) {
+                  setStopwatches((prevStopwatches) =>
+                    prevStopwatches.filter((st) => st.id !== stopwatch.id)
+                  );
+                  setIsRemoving((prev) => { 
+                    const newSet = new Set(prev);
+                    prev.delete(stopwatch.id);
+                    return newSet;
+                  })
+                }
+                isAddedRefs.current.delete(stopwatch.id);
+              }}
+            >
+              <Stopwatch id={stopwatch.id} removeStopwatch={removeStopwatch} />
+            </div>
+          )
+        })}
       </div>
     </div>
   );
